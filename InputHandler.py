@@ -5,7 +5,10 @@ STRING_TO_TILESET = {
     "#": 35,
     "$": 36,
     ".": 46,
+    "/": 47,
     "=": 61,
+    "@": 64,
+    "\\": 92,
     "_": 95,
     "a": 97,
     "b": 98,
@@ -33,7 +36,9 @@ STRING_TO_TILESET = {
     "x": 120,
     "y": 121,
     "z": 122,
-    "|": 124
+    "[": 123,
+    "|": 124,
+    "]": 125
 }
 
 TILESET_TO_STRING = {
@@ -41,7 +46,10 @@ TILESET_TO_STRING = {
     35: "#",
     36: "$",
     46: ".",
+    47: "/",
     61: "=",
+    64: "@",
+    92: "\\",
     95: "_",
     97: "a",
     98: "b",
@@ -69,16 +77,22 @@ TILESET_TO_STRING = {
     120: "x",
     121: "y",
     122: "z",
-    124: "|"
+    123: "[",
+    124: "|",
+    125: "]"
 }
 
 KEY_COMMANDS = {
-    # special character mappings (custom)
+    # special character mappings (custom use values > 256 to avoid conflict with tileset)
     tcod.event.KeySym.RETURN: 500,
-    tcod.event.KeySym.BACKSPACE: 1,
-    tcod.event.KeySym.SPACE: STRING_TO_TILESET[" "],
-    tcod.event.KeySym.ESCAPE: 9,
+    tcod.event.KeySym.BACKSPACE: 501,
+    tcod.event.KeySym.UP: 502,
+    tcod.event.KeySym.RIGHT: 503,
+    tcod.event.KeySym.DOWN: 504,
+    tcod.event.KeySym.LEFT: 505,
+    tcod.event.KeySym.ESCAPE: 509,
     # tileset mappings for ascii keyboard letters (Code Page 437)
+    tcod.event.KeySym.SPACE: STRING_TO_TILESET[" "],
     tcod.event.KeySym.a: STRING_TO_TILESET["a"],
     tcod.event.KeySym.b: STRING_TO_TILESET["b"],
     tcod.event.KeySym.c: STRING_TO_TILESET["c"],
@@ -107,23 +121,38 @@ KEY_COMMANDS = {
     tcod.event.KeySym.z: STRING_TO_TILESET["z"]
 }
 
-def handleInput(passed_event, CONSOLE) -> bool:
+def handleKeyboardInput(passed_event, CONSOLE, console_active=True) -> int:
     '''
     # this function checks for valid character input and then sets the value in the Console
-    # return false if the program SHOULD exit, return true otherwise
+    # -1 -- exit
+    # 0 -- no op
+    # 1 -- up arrow
+    # 2 -- right arrow
+    # 3 -- down arrow
+    # 4 -- left arrow
     '''
     if (passed_event in KEY_COMMANDS): # check if keyboard input is handled
         event = KEY_COMMANDS[passed_event]
         if (event == 500):
-            CONSOLE.newLine()
-            return True
-        if (event == 1):
-            CONSOLE.backspace()
-            return True
-        if (event == 9):
-            return False
+            if (console_active):
+                CONSOLE.newLine()
+            return 500
+        elif (event == 501):
+            if (console_active):
+                CONSOLE.backspace()
+            return 0
+        elif (event == 502):
+            return 1;
+        elif (event == 503):
+            return 2;
+        elif (event == 504):
+            return 3;
+        elif (event == 505):
+            return 4;
+        elif (event == 509):
+            return -1
         else:
             CONSOLE.set(event)
-            return True
+            return 0
     else: # ignore invalid keyboard input
-        return True
+        return 0
