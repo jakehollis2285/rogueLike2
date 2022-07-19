@@ -1,114 +1,129 @@
 import tcod
 
-KEY_COMMANDS = {
-    tcod.event.KeySym.RETURN: 0,
-    tcod.event.KeySym.q: 1,
-    tcod.event.KeySym.w: 2,
-    tcod.event.KeySym.e: 3,
-    tcod.event.KeySym.r: 4,
-    tcod.event.KeySym.t: 5,
-    tcod.event.KeySym.y: 6,
-    tcod.event.KeySym.u: 7,
-    tcod.event.KeySym.i: 8,
-    tcod.event.KeySym.o: 9,
-    tcod.event.KeySym.p: 10,
-    tcod.event.KeySym.a: 11,
-    tcod.event.KeySym.s: 12,
-    tcod.event.KeySym.d: 13,
-    tcod.event.KeySym.f: 14,
-    tcod.event.KeySym.g: 15,
-    tcod.event.KeySym.h: 16,
-    tcod.event.KeySym.j: 17,
-    tcod.event.KeySym.k: 18,
-    tcod.event.KeySym.l: 19,
-    tcod.event.KeySym.z: 20,
-    tcod.event.KeySym.x: 21,
-    tcod.event.KeySym.c: 22,
-    tcod.event.KeySym.v: 23,
-    tcod.event.KeySym.b: 24,
-    tcod.event.KeySym.n: 25,
-    tcod.event.KeySym.m: 26
+STRING_TO_TILESET = {
+    " ": 0,
+    "#": 35,
+    "$": 36,
+    ".": 46,
+    "=": 61,
+    "_": 95,
+    "a": 97,
+    "b": 98,
+    "c": 99,
+    "d": 100,
+    "e": 101,
+    "f": 102,
+    "g": 103,
+    "h": 104,
+    "i": 105,
+    "j": 106,
+    "k": 107,
+    "l": 108,
+    "m": 109,
+    "n": 110,
+    "o": 111,
+    "p": 112,
+    "q": 113,
+    "r": 114,
+    "s": 115,
+    "t": 116,
+    "u": 117,
+    "v": 118,
+    "w": 119,
+    "x": 120,
+    "y": 121,
+    "z": 122,
+    "|": 124
 }
 
-def handleInput(passed_event, console, CONSOLE) -> None:
-    event = KEY_COMMANDS[passed_event]
-    if (event == 0) :
-        CONSOLE.newLine()
-    elif (event == 1):
-        # q
-        CONSOLE.set(113)
-    elif (event == 2):
-        # w
-        CONSOLE.set(119)
-    elif (event == 3):
-        # e
-        CONSOLE.set(101)
-    elif (event == 4):
-        # r
-        CONSOLE.set(114)
-    elif (event == 5):
-        # t
-        CONSOLE.set(116)
-    elif (event == 6):
-        # y
-        CONSOLE.set(121)
-    elif (event == 7):
-        # u
-        CONSOLE.set(117)
-    elif (event == 8):
-        # i
-        CONSOLE.set(105)
-    elif (event == 9):
-        # o
-        CONSOLE.set(111)
-    elif (event == 10):
-        # p
-        CONSOLE.set(112)
-    elif (event == 11):
-        # a
-        CONSOLE.set(97)
-    elif (event == 12):
-        # s
-        CONSOLE.set(115)
-    elif (event == 13):
-        # d
-        CONSOLE.set(100)
-    elif (event == 14):
-        # f
-        CONSOLE.set(102)
-    elif (event == 15):
-        # g
-        CONSOLE.set(103)
-    elif (event == 16):
-        # h
-        CONSOLE.set(104)
-    elif (event == 17):
-        # j
-        CONSOLE.set(106)
-    elif (event == 18):
-        # k
-        CONSOLE.set(107)
-    elif (event == 19):
-        # l
-        CONSOLE.set(108)
-    elif (event == 20):
-        # z
-        CONSOLE.set(122)
-    elif (event == 21):
-        # x
-        CONSOLE.set(120)
-    elif (event == 22):
-        # c
-        CONSOLE.set(99)
-    elif (event == 23):
-        # v
-        CONSOLE.set(118)
-    elif (event == 24):
-        # b
-        CONSOLE.set(98)
-    elif (event == 25):
-        # n
-        CONSOLE.set(110)
-    elif (event == 26):
-        # m
-        CONSOLE.set(109)
+TILESET_TO_STRING = {
+    0: " ",
+    35: "#",
+    36: "$",
+    46: ".",
+    61: "=",
+    95: "_",
+    97: "a",
+    98: "b",
+    99: "c",
+    100: "d",
+    101: "e",
+    102: "f",
+    103: "g",
+    104: "h",
+    105: "i",
+    106: "j",
+    107: "k",
+    108: "l",
+    109: "m",
+    110: "n",
+    111: "o",
+    112: "p",
+    113: "q",
+    114: "r",
+    115: "s",
+    116: "t",
+    117: "u",
+    118: "v",
+    119: "w",
+    120: "x",
+    121: "y",
+    122: "z",
+    124: "|"
+}
+
+KEY_COMMANDS = {
+    # special character mappings (custom)
+    tcod.event.KeySym.RETURN: 500,
+    tcod.event.KeySym.BACKSPACE: 1,
+    tcod.event.KeySym.SPACE: STRING_TO_TILESET[" "],
+    tcod.event.KeySym.ESCAPE: 9,
+    # tileset mappings for ascii keyboard letters (Code Page 437)
+    tcod.event.KeySym.a: STRING_TO_TILESET["a"],
+    tcod.event.KeySym.b: STRING_TO_TILESET["b"],
+    tcod.event.KeySym.c: STRING_TO_TILESET["c"],
+    tcod.event.KeySym.d: STRING_TO_TILESET["d"],
+    tcod.event.KeySym.e: STRING_TO_TILESET["e"],
+    tcod.event.KeySym.f: STRING_TO_TILESET["f"],
+    tcod.event.KeySym.g: STRING_TO_TILESET["g"],
+    tcod.event.KeySym.h: STRING_TO_TILESET["h"],
+    tcod.event.KeySym.i: STRING_TO_TILESET["i"],
+    tcod.event.KeySym.j: STRING_TO_TILESET["j"],
+    tcod.event.KeySym.k: STRING_TO_TILESET["k"],
+    tcod.event.KeySym.l: STRING_TO_TILESET["l"],
+    tcod.event.KeySym.m: STRING_TO_TILESET["m"],
+    tcod.event.KeySym.n: STRING_TO_TILESET["n"],
+    tcod.event.KeySym.o: STRING_TO_TILESET["o"],
+    tcod.event.KeySym.p: STRING_TO_TILESET["p"],
+    tcod.event.KeySym.q: STRING_TO_TILESET["q"],
+    tcod.event.KeySym.r: STRING_TO_TILESET["r"],
+    tcod.event.KeySym.s: STRING_TO_TILESET["s"],
+    tcod.event.KeySym.t: STRING_TO_TILESET["t"],
+    tcod.event.KeySym.u: STRING_TO_TILESET["u"],
+    tcod.event.KeySym.v: STRING_TO_TILESET["v"],
+    tcod.event.KeySym.w: STRING_TO_TILESET["w"],
+    tcod.event.KeySym.x: STRING_TO_TILESET["x"],
+    tcod.event.KeySym.y: STRING_TO_TILESET["y"],
+    tcod.event.KeySym.z: STRING_TO_TILESET["z"]
+}
+
+def handleInput(passed_event, CONSOLE) -> bool:
+    '''
+    # this function checks for valid character input and then sets the value in the Console
+    # return false if the program SHOULD exit, return true otherwise
+    '''
+    if (passed_event in KEY_COMMANDS): # check if keyboard input is handled
+        event = KEY_COMMANDS[passed_event]
+        if (event == 500):
+            CONSOLE.newLine()
+            return True
+        if (event == 1):
+            CONSOLE.backspace()
+            return True
+        if (event == 9):
+            return False
+        else:
+            CONSOLE.set(event)
+            return True
+    else: # ignore invalid keyboard input
+        return True
