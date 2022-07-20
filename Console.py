@@ -41,10 +41,13 @@ class Console(object):
                 if [i, j] == self.CONSOLE_POINTER:
                     window.put_char(i + CONSOLE_OFFSET_X, j + CONSOLE_OFFSET_Y, InputHandler.STRING_TO_TILESET["_"])
 
-    def printLine(self, message) -> None:
+    def printLine(self, message, saveToHistory=False) -> None:
         ''' print a string {message} in the console at console pointer '''
+        self.CONSOLE_POINTER = [2, self.CONSOLE_POINTER[1] + 1]
         for i in range(len(message)):
             self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0] + i, self.CONSOLE_POINTER[1]] = InputHandler.STRING_TO_TILESET[message[i]]
+        if (saveToHistory):
+            self.saveLineToHistory()
         self.CONSOLE_POINTER[1] += 1
 
     def saveLineToHistory(self) -> None:
@@ -85,6 +88,23 @@ class Console(object):
         if (command == "help"):
             self.printHelp()
 
+    def parseCommand(self, command_array) -> None:
+        ''' 
+            given an array of character return a string command 
+            strings returned are in the form "arg1 arg2 arg3 ... argN"
+            where arguments are allowed 1 space in between
+
+            '|' and '_' characters are ignored
+            2 spaces terminates the string
+        '''
+        command = ""
+        for i in range(len(command_array)):
+            if (InputHandler.TILESET_TO_STRING[command_array[i]] == " ") and (InputHandler.TILESET_TO_STRING[command_array[i + 1]] == " "):
+                break;
+            if (InputHandler.TILESET_TO_STRING[command_array[i]] != "|" and InputHandler.TILESET_TO_STRING[command_array[i]] != "_"):
+                command += InputHandler.TILESET_TO_STRING[command_array[i]]
+        return command
+
     def newLine(self) -> None:
         '''
             return character input in the console
@@ -93,12 +113,7 @@ class Console(object):
              - increment pointer to new line and add prompt
         '''
         command_array = self.CONSOLE_OBJECT[2:,self.CONSOLE_POINTER[1]]
-        command = ""
-        for i in range(len(command_array)):
-            if (InputHandler.TILESET_TO_STRING[command_array[i]] == " ") and (InputHandler.TILESET_TO_STRING[command_array[i + 1]] == " "):
-                break;
-            if (InputHandler.TILESET_TO_STRING[command_array[i]] != "|"):
-                command += InputHandler.TILESET_TO_STRING[command_array[i]]
+        command = self.parseCommand(command_array)
         Logger.debug("user entered command: {0}".format(command))
         self.saveLineToHistory()
         self.set(InputHandler.STRING_TO_TILESET[" "])

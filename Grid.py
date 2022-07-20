@@ -25,10 +25,10 @@ class Grid(object):
 	    window.put_char(self.PLAYER_POSITON[0], self.PLAYER_POSITON[1], InputHandler.STRING_TO_TILESET["@"])
 
 	def movePlayer(self, op):
-		# UP -- 1
-	    # RIGHT -- 2
-	    # DOWN -- 3
-	    # LEFT -- 4
+		# NORTH -- 1
+	    # EAST -- 2
+	    # SOUTH -- 3
+	    # WEST -- 4
 	    # move player
 		if (op == 1):
 			self.PLAYER_POSITON[1] -= 1

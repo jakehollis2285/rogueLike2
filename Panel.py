@@ -25,9 +25,7 @@ class Panel(object):
     def printColoredLine(self, message, r, g, b, window):
         ''' print message to panel at panel pointer with rgb colors '''
         colored_message = self.colored(r, g, b, message)
-        window.print(self.PANEL_POINTER[0] + PANEL_OFFSET_X, self.PANEL_POINTER[1] + PANEL_OFFSET_Y, colored_message)
-        self.PANEL_POINTER[0] = 2
-        self.PANEL_POINTER[1] += 1
+        self.printLine(message, window)
 
     def printLine(self, message, window):
         ''' print message to panel at panel pointer with default color '''
@@ -36,7 +34,7 @@ class Panel(object):
         self.PANEL_POINTER[1] += 1
 
 
-    def printLevelName(self, window, GRID):
+    def printLevelName(self, GRID, window):
         '''
             lvl:
             levelname
@@ -45,7 +43,7 @@ class Panel(object):
         self.printColoredLine("{0}".format(GRID.LEVELNAME), 0, 255, 0, window)
         self.PANEL_POINTER[1] += 1
 
-    def printPlayerPosition(self, window, GRID):
+    def printPlayerPosition(self, GRID, window):
         '''
             PlayerPos: x,y
         '''
@@ -57,7 +55,7 @@ class Panel(object):
         self.PANEL_OBJECT = self.initPanel()
         self.PANEL_POINTER = [2, 2]
 
-    def printPanel(self, window, GRID) -> None:
+    def printPanel(self, GRID, window) -> None:
         # print border from panel obj
         for i in range(PANEL_X):
             for j in range(PANEL_Y):
@@ -66,5 +64,5 @@ class Panel(object):
 
         # set pointer / print contents
         self.PANEL_POINTER = [2, 2]
-        self.printLevelName(window, GRID)
-        self.printPlayerPosition(window, GRID)
+        self.printLevelName(GRID, window)
+        self.printPlayerPosition(GRID, window)

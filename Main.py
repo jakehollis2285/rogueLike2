@@ -8,30 +8,24 @@ import InputHandler as InputHandler
 import Globals as Globals
 import Logger as Logger
 
-RESOLUTION_X, RESOLUTION_Y = 1920, 1080  # Window pixel resolution (when not maximized.)
-FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED # allow window resizing
+import UnitTest as UnitTest
 
 # screen objects
 GRID = Grid.Grid()
 CONSOLE = Console.Console()
 PANEL = Panel.Panel()
-
-# load tileset
-tileset = tcod.tileset.load_tilesheet(
-    "Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
-)
-
 # set max number of chars in console (computed from dimensions of screen objects)
 RENDER_X, RENDER_Y = Grid.GRID_X + Panel.PANEL_X, Grid.GRID_Y + Console.CONSOLE_Y
 
-MAX_SCALE = 2
-MIN_SCALE = 1
+def quit() -> None:
+    Logger.debug("User entered exit command... exiting...")
+    raise SystemExit()
 
 def printScreen(window) -> None:
     ''' print screen objects '''
     CONSOLE.printConsole(window)
     GRID.printGrid(window)
-    PANEL.printPanel(window, GRID)
+    PANEL.printPanel(GRID, window)
 
 def printTitle(context) -> None:
     ''' print title screen from globals '''
@@ -59,7 +53,9 @@ def runTitleSequence(context, SCALE) -> None:
                 raise SystemExit()
             elif isinstance(event, tcod.event.KeyDown):
                 op = InputHandler.handleKeyboardInput(event.sym, CONSOLE, False)
-                if(op == 500):
+                if(op < 0):
+                    quit()
+                elif(op == 500):
                     return;
 
 def handleWindowScale(SCALE, event) -> None:
@@ -78,7 +74,7 @@ def main() -> None:
     ''' Script entry point '''
     SCALE = 1.5
     with tcod.context.new(  # New window with pixel resolution of width×height, alllow window resizeable, and set the default tileset
-        width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=tileset
+        width=Globals.RESOLUTION_X, height=Globals.RESOLUTION_Y, sdl_window_flags=Globals.FLAGS, tileset=Globals.tileset
     ) as context:
 
         # run title sequence and ignore all events other than the title sequence exit event
@@ -97,22 +93,23 @@ def main() -> None:
             for event in tcod.event.wait():
                 context.convert_event(event)  # Sets tile coordinates for mouse events.
                 Logger.debug(event)  # Print event names and attributes.
-                if isinstance(event, tcod.event.Quit):
-                    raise SystemExit()
+                if isinstance(event, tcod.event.Quit): # Handle exit event (on window close)
+                    quit()
                 elif isinstance(event, tcod.event.KeyDown):
                     op = InputHandler.handleKeyboardInput(event.sym, CONSOLE)
-                    # handle exit
+                    # handle exit (on user input)
                     if(op < 0):
-                        raise SystemExit()
+                        quit()
                     else:
                         # player movement operators
                         if(op > 0 and op < 5):
                             GRID.movePlayer(op)
                 elif isinstance(event, tcod.event.MouseWheel):
-                    SCALE = handleWindowScale(SCALE, event)
+                    SCALE = handleWindowScale(SCALE, event) # Handle user scroll wheel input to change tileset scale
                 elif isinstance(event, tcod.event.WindowResized) and event.type == "WINDOWRESIZED":
-                    pass  # Ignore resize events, we handle these explicitly on frame update
+                    pass # Ignore resize events, we handle these explicitly on frame update
 
 
 if __name__ == "__main__":
+    UnitTest.main()
     main()
