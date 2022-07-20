@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 import tcod
 import numpy as np
+import World as World
 import Console as Console
 import Grid as Grid
 import Panel as Panel
-import InputHandler as InputHandler
+from utilities import InputHandler as InputHandler
+from utilities import Logger as Logger
 import Globals as Globals
-import Logger as Logger
 
 import UnitTest as UnitTest
 
+# world object
+WORLD = World.World("WORLD_1")
 # screen objects
-GRID = Grid.Grid()
-CONSOLE = Console.Console()
-PANEL = Panel.Panel()
+GRID = Grid.Grid(WORLD) # "world renderer"
+CONSOLE = Console.Console() # console renderer
+PANEL = Panel.Panel() # info panel renderer
 # set max number of chars in console (computed from dimensions of screen objects)
 RENDER_X, RENDER_Y = Grid.GRID_X + Panel.PANEL_X, Grid.GRID_Y + Console.CONSOLE_Y
 
@@ -24,7 +27,7 @@ def quit() -> None:
 def printScreen(window) -> None:
     ''' print screen objects '''
     CONSOLE.printConsole(window)
-    GRID.printGrid(window)
+    GRID.draw(window)
     PANEL.printPanel(GRID, window)
 
 def printTitle(context) -> None:
@@ -60,6 +63,8 @@ def runTitleSequence(context, SCALE) -> None:
 
 def handleWindowScale(SCALE, event) -> None:
     ''' Use the mouse wheel to change the rendered tile size '''
+    MAX_SCALE = 3
+    MIN_SCALE = 0.05
     sign = 1
     if (event.y < 0):
         sign = -1
@@ -103,7 +108,7 @@ def main() -> None:
                     else:
                         # player movement operators
                         if(op > 0 and op < 5):
-                            GRID.movePlayer(op)
+                            GRID.move(GRID.PLAYER, op)
                 elif isinstance(event, tcod.event.MouseWheel):
                     SCALE = handleWindowScale(SCALE, event) # Handle user scroll wheel input to change tileset scale
                 elif isinstance(event, tcod.event.WindowResized) and event.type == "WINDOWRESIZED":
@@ -111,5 +116,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    UnitTest.main()
+    if (Globals.RUN_TESTS) :
+        UnitTest.main()
     main()

@@ -1,0 +1,6 @@
+{
+	"width":60, 
+	"height":40, 
+	"initial_chance":0.5, 
+	"convolve_steps":4
+}

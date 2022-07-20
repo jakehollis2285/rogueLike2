@@ -1,10 +1,10 @@
 import tcod
 import numpy as np
-import InputHandler as InputHandler
-import ScreenPrintHelper as sph
+from utilities import InputHandler as InputHandler
+from utilities import ScreenPrintHelper as sph
 
-PANEL_X, PANEL_Y = 20, 60
-PANEL_OFFSET_X, PANEL_OFFSET_Y = 80, 0
+PANEL_X, PANEL_Y = 20, 50
+PANEL_OFFSET_X, PANEL_OFFSET_Y = 60, 0
 
 PANEL_MAX_X, PANEL_MAX_Y = 18, 58
 
@@ -25,7 +25,7 @@ class Panel(object):
     def printColoredLine(self, message, r, g, b, window):
         ''' print message to panel at panel pointer with rgb colors '''
         colored_message = self.colored(r, g, b, message)
-        self.printLine(message, window)
+        self.printLine(colored_message, window)
 
     def printLine(self, message, window):
         ''' print message to panel at panel pointer with default color '''
@@ -47,7 +47,7 @@ class Panel(object):
         '''
             PlayerPos: x,y
         '''
-        self.printColoredLine("PlayerPos: {0},{1}".format(GRID.PLAYER_POSITON[0] + 1, GRID.PLAYER_POSITON[1] + 1), 0, 255, 0, window)
+        self.printColoredLine("PlayerPos: {0},{1}".format(GRID.PLAYER.POSITION[0] + 1, GRID.PLAYER.POSITION[1] + 1), 0, 255, 0, window)
         self.PANEL_POINTER[1] += 1
 
     def __init__(self):

@@ -1,4 +1,4 @@
-import InputHandler as InputHandler
+from utilities import InputHandler as InputHandler
 
 def printBoxBorder(obj, i, j, max_x, max_y):
     '''

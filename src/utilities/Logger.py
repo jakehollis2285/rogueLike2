@@ -1,4 +1,4 @@
-from ANSIColors import Colors as ac
+from utilities.ANSIColors import Colors as ac
 
 import Globals as Globals
 

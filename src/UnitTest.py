@@ -1,7 +1,8 @@
 import tcod
-import Logger as Logger
-import InputHandler as InputHandler
+from utilities import Logger as Logger
+from utilities import InputHandler as InputHandler
 import Console as Console
+import World as World
 import Grid as Grid
 import Panel as Panel
 
@@ -10,7 +11,9 @@ import Globals as Globals
 # set max number of chars in console (computed from dimensions of screen objects)
 RENDER_X, RENDER_Y = Grid.GRID_X + Panel.PANEL_X, Grid.GRID_Y + Console.CONSOLE_Y
 
-GRID = Grid.Grid()
+WORLD = World.World("Test_World")
+EMPTY_GRID = Grid.Grid()
+GRID = Grid.Grid(WORLD)
 CONSOLE = Console.Console()
 PANEL = Panel.Panel()
 
@@ -39,36 +42,37 @@ def testGrid():
 	RESOLUTION_X, RESOLUTION_Y = 1920, 1080  # Window pixel resolution (when not maximized.)
 	FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED # allow window resizing
 	SCALE = 1.5
-	# load tileset
-	tileset = tcod.tileset.load_tilesheet(
-	    "Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
-	)
 	with tcod.context.new(  # New window with pixel resolution of width×height, alllow window resizeable, and set the default tileset
-		width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=tileset
+		width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=Globals.tileset
 	) as context:
 		window = context.new_console(min_columns=RENDER_X, min_rows=RENDER_Y, order="C", magnification=SCALE)
-		GRID.printGrid(window)
-		position = list(GRID.PLAYER_POSITON)
-		# case1 (north)
-		GRID.movePlayer(1)
-		if (GRID.PLAYER_POSITON != [position[0], position[1] - 1]):
+		EMPTY_GRID.draw(window)
+		position = list(EMPTY_GRID.PLAYER.POSITION)
+		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 1)
+		EMPTY_GRID.draw(window)
+		if (EMPTY_GRID.PLAYER.POSITION != [position[0], position[1] - 1]):
 			Logger.error("case1 failed in UnitTest.testGrid()")
 			raise SystemExit()
-		# case2 (east)
-		GRID.movePlayer(2)
-		if (GRID.PLAYER_POSITON != [position[0] + 1, position[1] - 1]):
+		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 3)
+		EMPTY_GRID.draw(window)
+		if (EMPTY_GRID.PLAYER.POSITION != position):
 			Logger.error("case2 failed in UnitTest.testGrid()")
 			raise SystemExit()
-		# case3 (south)
-		GRID.movePlayer(3)
-		if (GRID.PLAYER_POSITON != [position[0] + 1, position[1]]):
+		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 2)
+		EMPTY_GRID.draw(window)
+		if (EMPTY_GRID.PLAYER.POSITION != [position[0] + 1, position[1]]):
 			Logger.error("case3 failed in UnitTest.testGrid()")
 			raise SystemExit()
-		# case4 (west)
-		GRID.movePlayer(4)
-		if (GRID.PLAYER_POSITON != [position[0], position[1]]):
+		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 4)
+		EMPTY_GRID.draw(window)
+		if (EMPTY_GRID.PLAYER.POSITION != position):
 			Logger.error("case4 failed in UnitTest.testGrid()")
 			raise SystemExit()
+
+		GRID.WORLD.incrementLevelIndex()
+		GRID.rerenderGrid()
+		GRID.WORLD.decrementLevelIndex()
+		GRID.rerenderGrid()
 	Logger.info("Grid Unit Tests Complete")
 
 ####################
@@ -78,12 +82,8 @@ def testPanel():
 	RESOLUTION_X, RESOLUTION_Y = 1920, 1080  # Window pixel resolution (when not maximized.)
 	FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED # allow window resizing
 	SCALE = 1.5
-	# load tileset
-	tileset = tcod.tileset.load_tilesheet(
-	    "Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
-	)
 	with tcod.context.new(  # New window with pixel resolution of width×height, alllow window resizeable, and set the default tileset
-		width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=tileset
+		width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=Globals.tileset
 	) as context:
 		window = context.new_console(min_columns=RENDER_X, min_rows=RENDER_Y, order="C", magnification=SCALE)
 		PANEL.printLine("string", window)
@@ -100,12 +100,8 @@ def testConsole():
 	RESOLUTION_X, RESOLUTION_Y = 1920, 1080  # Window pixel resolution (when not maximized.)
 	FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED # allow window resizing
 	SCALE = 1.5
-	# load tileset
-	tileset = tcod.tileset.load_tilesheet(
-	    "Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
-	)
 	with tcod.context.new(  # New window with pixel resolution of width×height, alllow window resizeable, and set the default tileset
-		width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=tileset
+		width=RESOLUTION_X, height=RESOLUTION_Y, sdl_window_flags=FLAGS, tileset=Globals.tileset
 	) as context:
 		window = context.new_console(min_columns=RENDER_X, min_rows=RENDER_Y, order="C", magnification=SCALE)
 		# test Console I/O

@@ -1,11 +1,11 @@
 import tcod
 import numpy as np
 
-import InputHandler as InputHandler
-import ScreenPrintHelper as sph
-import Logger as Logger
+from utilities import InputHandler as InputHandler
+from utilities import ScreenPrintHelper as sph
+from utilities import Logger as Logger
 
-CONSOLE_X, CONSOLE_Y = 80, 20
+CONSOLE_X, CONSOLE_Y = 60, 10
 CONSOLE_OFFSET_X, CONSOLE_OFFSET_Y = 0, 40
 HISTORY_MAX_LENGTH = 100
 
@@ -74,7 +74,7 @@ class Console(object):
         elif (self.CONSOLE_POINTER[1] >= CONSOLE_Y - 1):
             # clear screen / reset pointer
             self.CONSOLE_OBJECT = self.initConsole()
-            self.CONSOLE_POINTER = [2, 1]
+            self.CONSOLE_POINTER = [1, 1]
 
     def printHelp(self):
         ''' print help command '''
@@ -103,6 +103,9 @@ class Console(object):
                 break;
             if (InputHandler.TILESET_TO_STRING[command_array[i]] != "|" and InputHandler.TILESET_TO_STRING[command_array[i]] != "_"):
                 command += InputHandler.TILESET_TO_STRING[command_array[i]]
+        if (command != ""):
+            while command[-1] == " ":
+                command = command[:len(command) - 1]
         return command
 
     def newLine(self) -> None:
@@ -117,9 +120,8 @@ class Console(object):
         Logger.debug("user entered command: {0}".format(command))
         self.saveLineToHistory()
         self.set(InputHandler.STRING_TO_TILESET[" "])
-        self.CONSOLE_POINTER[0] = 1
-        self.CONSOLE_POINTER[1] += 1
         self.handleCommand(command)
+        self.CONSOLE_POINTER = [1, self.CONSOLE_POINTER[1] + 1]
         self.set(InputHandler.STRING_TO_TILESET["$"])
 
     def backspace(self) -> None:

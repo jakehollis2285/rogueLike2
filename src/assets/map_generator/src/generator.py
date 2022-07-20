@@ -1,17 +1,11 @@
-#! /usr/bin/env python
 # coding: utf-8
 
 # generator-1.py, a simple python dungeon generator by
 # James Spencer <jamessp [at] gmail.com>.
 
-# To the extent possible under law, the person who associated CC0 with
-# pathfinder.py has waived all copyright and related or neighboring rights
-# to pathfinder.py.
-
 # You should have received a copy of the CC0 legalcode along with this
 # work. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-from __future__ import print_function
 import random
 import sys
 import json
@@ -61,7 +55,6 @@ class Generator():
             # one rectangle's minimum in some dimension
             # is greater than the other's maximum in
             # that dimension.
-
             if (x < (current_room[0] + current_room[2]) and
                 current_room[0] < (x + w) and
                 y < (current_room[1] + current_room[3]) and
@@ -305,19 +298,21 @@ class Generator():
         print('Room List: ', self.room_list)
         print('\nCorridor List: ', self.corridor_list)
 
-        [print(row) for row in self.tiles_level]
-        with open('out.txt', 'w') as f:
-            for row in self.tiles_level:
-                print (row, file=f)
+def show(gen):
+    for row in gen.tiles_level:
+        print (row)
 
+def printToFile(gen, out_file):
+    with open('assets/map_generator/out/' + out_file, 'w') as f:
+        for row in gen.tiles_level:
+            print (row, file=f)
 
-if __name__ == '__main__':
-
+def entrypoint(filename, out_file):
     config = {}
 
-    if(len(sys.argv) == 2):
-        print("loading config from file: " + str(sys.argv[1]))
-        file = open(sys.argv[1])
+    if(len(filename) != None):
+        print("loading config from file: " + str(filename))
+        file = open(filename)
         config = json.loads(file.read())
         
 
@@ -339,3 +334,10 @@ if __name__ == '__main__':
     gen = Generator(config)
     gen.gen_level()
     gen.gen_tiles_level()
+    show(gen)
+    printToFile(gen, out_file)
+
+    return gen.tiles_level
+
+if __name__ == '__main__':
+    entrypoint(sys.argv[1])

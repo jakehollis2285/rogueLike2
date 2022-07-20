@@ -21,6 +21,8 @@ press [esc] to exit the game...
 
 """                                                                         
 	                                                                         
+RUN_TESTS = True
+
 class LOGGER_FLAGS:
       info = True
       debug = True
@@ -31,9 +33,11 @@ RESOLUTION_X, RESOLUTION_Y = 1920, 1080  # Window pixel resolution (when not max
 FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED # allow window resizing
 
 # load tileset
+# tileset = tcod.tileset.load_tilesheet(
+#     "assets/Hack_square_64x64.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+# ) 
 tileset = tcod.tileset.load_tilesheet(
-    "Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+    "assets/Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
 )
 
-MAX_SCALE = 2
-MIN_SCALE = 1                                                                
+tcod.tileset.set_default(tileset)                                                              
