@@ -1,4 +1,9 @@
 import tcod
+import World as World
+import Console as Console
+import Grid as Grid
+import Panel as Panel
+import ScreenHandler as ScreenHandler
 
 TITLE = """
 
@@ -34,10 +39,25 @@ FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED # 
 
 # load tileset
 # tileset = tcod.tileset.load_tilesheet(
-#     "assets/Hack_square_64x64.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+#     "assets/tilesets/Hack_square_64x64.png", 16, 16, tcod.tileset.CHARMAP_CP437,
 # ) 
 tileset = tcod.tileset.load_tilesheet(
-    "assets/Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+    "assets/tilesets/Bisasam_20x20.png", 16, 16, tcod.tileset.CHARMAP_CP437,
 )
+# tileset = tcod.tileset.load_tilesheet(
+#     "assets/tilesets/Gold_plated_16x16_v2.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+# )
+# tileset = tcod.tileset.load_tilesheet(
+#     "assets/tilesets/Terminus.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+# )
 
 tcod.tileset.set_default(tileset)                                                              
+
+# world object
+WORLD = World.World("WORLD_1")
+# screen objects
+# GRID = Grid.Grid() # screen renderer
+CONSOLE = Console.Console() # console renderer
+GRID = Grid.Grid(WORLD) # "world renderer"
+PANEL = Panel.Panel() # info panel renderer
+SCREEN_HANDLER =  ScreenHandler.ScreenHandler(CONSOLE, GRID, PANEL)

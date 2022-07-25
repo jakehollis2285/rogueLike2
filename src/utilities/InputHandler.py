@@ -1,12 +1,25 @@
 import tcod
+import Globals as Globals
 
 STRING_TO_TILESET = {
     " ": 0,
     "#": 35,
     "$": 36,
     "%": 37,
+    ",": 44,
     ".": 46,
     "/": 47,
+    "0": 48,
+    "1": 49,
+    "2": 50,
+    "3": 51,
+    "4": 52,
+    "5": 53,
+    "6": 54,
+    "7": 55,
+    "8": 56,
+    "9": 57,
+    ":": 58,
     "=": 61,
     "@": 64,
     "[": 91,
@@ -42,12 +55,21 @@ STRING_TO_TILESET = {
     "{": 123,
     "|": 124,
     "}": 125,
-    "╬": 206,
-    "door": 206
+    "╣": 185,
+    "║": 186,
+    "╗": 187,
+    "╝": 188,
+    "╚": 200,
+    "╔": 201,
+    "╩": 202,
+    "╦": 203,
+    "╠": 204,
+    "═": 205
 }
 
 TILESET_TO_STRING = {
     0: " ",
+    32: " ",
     35: "#",
     36: "$",
     37: "%",
@@ -55,6 +77,32 @@ TILESET_TO_STRING = {
     47: "/",
     61: "=",
     64: "@",
+    65: "A",
+    66: "B",
+    67: "C",
+    68: "D",
+    69: "E",
+    70: "F",
+    71: "G",
+    72: "H",
+    73: "I",
+    74: "J",
+    75: "K",
+    76: "L",
+    77: "M",
+    78: "N",
+    79: "O",
+    80: "P",
+    81: "Q",
+    82: "R",
+    83: "S",
+    84: "T",
+    85: "U",
+    86: "V",
+    87: "W",
+    88: "X",
+    89: "Y",
+    90: "Z",
     91: "[",
     92: "\\",
     93: "]",
@@ -93,41 +141,41 @@ TILESET_TO_STRING = {
 
 KEY_COMMANDS = {
     # special character mappings (custom use values > 256 to avoid conflict with tileset)
-    tcod.event.KeySym.RETURN: 500,
-    tcod.event.KeySym.BACKSPACE: 501,
-    tcod.event.KeySym.UP: 502,
-    tcod.event.KeySym.RIGHT: 503,
-    tcod.event.KeySym.DOWN: 504,
-    tcod.event.KeySym.LEFT: 505,
-    tcod.event.KeySym.ESCAPE: 509,
+    tcod.event.KeySym.RETURN: 50000,
+    tcod.event.KeySym.BACKSPACE: 50001,
+    tcod.event.KeySym.UP: 50002,
+    tcod.event.KeySym.RIGHT: 50003,
+    tcod.event.KeySym.DOWN: 50004,
+    tcod.event.KeySym.LEFT: 50005,
+    tcod.event.KeySym.ESCAPE: 50009,
     # tileset mappings for ascii keyboard letters (Code Page 437)
-    tcod.event.KeySym.SPACE: STRING_TO_TILESET[" "],
-    tcod.event.KeySym.a: STRING_TO_TILESET["a"],
-    tcod.event.KeySym.b: STRING_TO_TILESET["b"],
-    tcod.event.KeySym.c: STRING_TO_TILESET["c"],
-    tcod.event.KeySym.d: STRING_TO_TILESET["d"],
-    tcod.event.KeySym.e: STRING_TO_TILESET["e"],
-    tcod.event.KeySym.f: STRING_TO_TILESET["f"],
-    tcod.event.KeySym.g: STRING_TO_TILESET["g"],
-    tcod.event.KeySym.h: STRING_TO_TILESET["h"],
-    tcod.event.KeySym.i: STRING_TO_TILESET["i"],
-    tcod.event.KeySym.j: STRING_TO_TILESET["j"],
-    tcod.event.KeySym.k: STRING_TO_TILESET["k"],
-    tcod.event.KeySym.l: STRING_TO_TILESET["l"],
-    tcod.event.KeySym.m: STRING_TO_TILESET["m"],
-    tcod.event.KeySym.n: STRING_TO_TILESET["n"],
-    tcod.event.KeySym.o: STRING_TO_TILESET["o"],
-    tcod.event.KeySym.p: STRING_TO_TILESET["p"],
-    tcod.event.KeySym.q: STRING_TO_TILESET["q"],
-    tcod.event.KeySym.r: STRING_TO_TILESET["r"],
-    tcod.event.KeySym.s: STRING_TO_TILESET["s"],
-    tcod.event.KeySym.t: STRING_TO_TILESET["t"],
-    tcod.event.KeySym.u: STRING_TO_TILESET["u"],
-    tcod.event.KeySym.v: STRING_TO_TILESET["v"],
-    tcod.event.KeySym.w: STRING_TO_TILESET["w"],
-    tcod.event.KeySym.x: STRING_TO_TILESET["x"],
-    tcod.event.KeySym.y: STRING_TO_TILESET["y"],
-    tcod.event.KeySym.z: STRING_TO_TILESET["z"]
+    tcod.event.KeySym.SPACE: ord(" "),
+    tcod.event.KeySym.a: ord("a"),
+    tcod.event.KeySym.b: ord("b"),
+    tcod.event.KeySym.c: ord("c"),
+    tcod.event.KeySym.d: ord("d"),
+    tcod.event.KeySym.e: ord("e"),
+    tcod.event.KeySym.f: ord("f"),
+    tcod.event.KeySym.g: ord("g"),
+    tcod.event.KeySym.h: ord("h"),
+    tcod.event.KeySym.i: ord("i"),
+    tcod.event.KeySym.j: ord("j"),
+    tcod.event.KeySym.k: ord("k"),
+    tcod.event.KeySym.l: ord("l"),
+    tcod.event.KeySym.m: ord("m"),
+    tcod.event.KeySym.n: ord("n"),
+    tcod.event.KeySym.o: ord("o"),
+    tcod.event.KeySym.p: ord("p"),
+    tcod.event.KeySym.q: ord("q"),
+    tcod.event.KeySym.r: ord("r"),
+    tcod.event.KeySym.s: ord("s"),
+    tcod.event.KeySym.t: ord("t"),
+    tcod.event.KeySym.u: ord("u"),
+    tcod.event.KeySym.v: ord("v"),
+    tcod.event.KeySym.w: ord("w"),
+    tcod.event.KeySym.x: ord("x"),
+    tcod.event.KeySym.y: ord("y"),
+    tcod.event.KeySym.z: ord("z")
 }
 
 def handleKeyboardInput(passed_event, CONSOLE, console_active=True) -> int:
@@ -140,28 +188,39 @@ def handleKeyboardInput(passed_event, CONSOLE, console_active=True) -> int:
     # 3 -- down arrow
     # 4 -- left arrow
     '''
-    if (passed_event in KEY_COMMANDS): # check if keyboard input is handled
-        event = KEY_COMMANDS[passed_event]
-        if (event == 500):
+    op = 0
+    if (passed_event.sym in KEY_COMMANDS): # check if keyboard input is handled
+        event = KEY_COMMANDS[passed_event.sym]
+        # capture capital letters using shift key input
+        if (passed_event.mod and tcod.event.Modifier.SHIFT and (event >= 97 and event <= 122)):
+            event -= 32
+        if (event == 50000):
             if (console_active):
                 CONSOLE.newLine()
-            return 500
-        elif (event == 501):
+            op = 50000
+        elif (event == 50001):
             if (console_active):
                 CONSOLE.backspace()
-            return 0
-        elif (event == 502):
-            return 1;
-        elif (event == 503):
-            return 2;
-        elif (event == 504):
-            return 3;
-        elif (event == 505):
-            return 4;
-        elif (event == 509):
-            return -1
+            op = 0
+        elif (event == 50002):
+            op = 1;
+        elif (event == 50003):
+            op = 2;
+        elif (event == 50004):
+            op = 3;
+        elif (event == 50005):
+            op = 4;
+        elif (event == 50009):
+            op = -1
         else:
             CONSOLE.set(event)
-            return 0
-    else: # ignore invalid keyboard input
-        return 0
+            op = 0
+
+    # handle exit (on user input)
+    if(op < 0):
+        raise SystemExit()
+    # player movement operators
+    elif(op > 0 and op < 5):
+        Globals.GRID.move(Globals.GRID.PLAYER, op)
+
+    return op

@@ -14,6 +14,16 @@ import json
 CHARACTER_TILES = {'stone': '.',
                    'floor': '.',
                    'wall': '#',
+                   'wall_y': '═',
+                   'wall_x': '║',
+                   'wall_yu': '╩',
+                   'wall_yd': '╦',
+                   'wall_xr': '╠',
+                   'wall_xl': '╣',
+                   'wall_corner_ld': '╗',
+                   'wall_corner_rd': '╔',
+                   'wall_corner_lu': '╝',
+                   'wall_corner_ru': '╚',
                    'door': '%',
                    'door_y': '_',
                    'door_x': '|'}
@@ -32,6 +42,32 @@ class Generator2():
         self.room_list = []
         self.corridor_list = []
         self.tiles_level = []
+
+    def isWall(self, char):
+        if(char == 'wall'):
+            return True
+        elif(char == 'wall_y'):
+            return True
+        elif(char == 'wall_x'):
+            return True
+        elif(char == 'wall_yu'):
+            return True
+        elif(char == 'wall_yd'):
+            return True
+        elif(char == 'wall_xr'):
+            return True
+        elif(char == 'wall_xl'):
+            return True
+        elif(char == 'wall_corner_ld'):
+            return True
+        elif(char == 'wall_corner_rd'):
+            return True
+        elif(char == 'wall_corner_lu'):
+            return True
+        elif(char == 'wall_corner_ru'):
+            return True
+        else:
+            return False
 
     def gen_door_location(self, w, h, x, y):
         d_x, d_y = 0, 0
@@ -67,6 +103,7 @@ class Generator2():
         x, y, w, h, d_x, d_y = 0, 0, 0, 0, 0, 0
 
         random.seed(datetime.now())
+        # random.seed(datetime.now())
 
         w = random.randint(self.min_room_xy, self.max_room_xy)
         h = random.randint(self.min_room_xy, self.max_room_xy)
@@ -91,9 +128,9 @@ class Generator2():
             # the x coordinate or the y coordinate
             # of either door is the same
             if(d_x == current_room[4]):
-                return False
+                return True
             if(d_y == current_room[5]):
-                return False
+                return True
             # The rectangles don't overlap if
             # one rectangle's minimum in some dimension
             # is greater than the other's maximum in
@@ -144,8 +181,6 @@ class Generator2():
                 elif(room1[4] == room2[4] + 1):
                     room1[4], room1[5] = self.gen_door_location(room1[2], room1[3], room1[0], room1[1])
 
-
-        # fill the map
         # paint rooms
         for room_num, room in enumerate(self.room_list):
             for b in range(room[2]):
@@ -154,63 +189,87 @@ class Generator2():
             # draw doors
             self.level[room[5]][room[4]] = 'door'
 
+
         # paint the walls
         for row in range(1, self.height - 1):
             for col in range(1, self.width - 1):
                 if self.level[row][col] == 'floor':
-                    if self.level[row - 1][col - 1] == 'stone':
-                        self.level[row - 1][col - 1] = 'wall'
-
                     if self.level[row - 1][col] == 'stone':
-                        self.level[row - 1][col] = 'wall'
-
-                    if self.level[row - 1][col + 1] == 'stone':
-                        self.level[row - 1][col + 1] = 'wall'
-
+                        self.level[row - 1][col] = 'wall_y'
                     if self.level[row][col - 1] == 'stone':
-                        self.level[row][col - 1] = 'wall'
-
+                        self.level[row][col - 1] = 'wall_x'
                     if self.level[row][col + 1] == 'stone':
-                        self.level[row][col + 1] = 'wall'
-
-                    if self.level[row + 1][col - 1] == 'stone':
-                        self.level[row + 1][col - 1] = 'wall'
-
+                        self.level[row][col + 1] = 'wall_x'
                     if self.level[row + 1][col] == 'stone':
-                        self.level[row + 1][col] = 'wall'
+                        self.level[row + 1][col] = 'wall_y'
 
-                    if self.level[row + 1][col + 1] == 'stone':
-                        self.level[row + 1][col + 1] = 'wall'
+        # repaint walls fixing disconnections
+        # paint the walls
+        for row in range(1, self.height - 1):
+            for col in range(1, self.width - 1):
+                if self.level[row][col] == 'wall_y':
+                    if self.level[row + 1][col] == 'wall_x':
+                        self.level[row][col] = 'wall_yd'
+                    elif self.level[row - 1][col] == 'wall_x':
+                        self.level[row][col] = 'wall_yu'
+
+                if self.level[row][col] == 'wall_x':
+                    if self.level[row][col + 1] == 'wall_y':
+                        self.level[row][col] = 'wall_xr'
+                    elif self.level[row][col - 1] == 'wall_y':
+                        self.level[row][col] = 'wall_xl'
+
+
+        # paint corners
+        for row in range(1, self.height - 1):
+            for col in range(1, self.width - 1):
+                if self.level[row][col] == 'stone':
+                    if self.level[row][col - 1] == 'wall_y' and (self.level[row + 1][col] == 'wall_x' or self.level[row + 1][col] == 'wall_xl' or self.level[row + 1][col] == 'wall_xr'):
+                        self.level[row][col] = 'wall_corner_ld'
+                    if self.level[row][col + 1] == 'wall_y' and (self.level[row + 1][col] == 'wall_x' or self.level[row + 1][col] == 'wall_xl' or self.level[row + 1][col] == 'wall_xr'):
+                        self.level[row][col] = 'wall_corner_rd'
+
+                    if self.level[row][col - 1] == 'wall_y' and (self.level[row - 1][col] == 'wall_x' or self.level[row + 1][col] == 'wall_yd' or self.level[row + 1][col] == 'wall_yu'):
+                        self.level[row][col] = 'wall_corner_lu'
+                    if self.level[row][col + 1] == 'wall_y' and (self.level[row - 1][col] == 'wall_x' or self.level[row + 1][col] == 'wall_yd' or self.level[row + 1][col] == 'wall_yu'):
+                        self.level[row][col] = 'wall_corner_ru'
+
+                    if self.level[row][col + 1] == 'wall_y' and self.level[row][col - 1] == 'wall_y' and self.level[row + 1][col] == 'wall_x':
+                        self.level[row][col] = 'wall_yd'
+                    if self.level[row][col + 1] == 'wall_y' and self.level[row][col - 1] == 'wall_y' and self.level[row - 1][col] == 'wall_x':
+                        self.level[row][col] = 'wall_yu'
+
+                    if self.level[row + 1][col] == 'wall_x' and self.level[row - 1][col] == 'wall_x' and self.level[row][col + 1] == 'wall_y':
+                        self.level[row][col] = 'wall_xr'
+                    if self.level[row + 1][col] == 'wall_x' and self.level[row - 1][col] == 'wall_x' and self.level[row][col - 1] == 'wall_y':
+                        self.level[row][col] = 'wall_xl'
+
 
         # remove floating doors
         for room_num, room in enumerate(self.room_list):
-            wall_count = 0
-            if(self.level[room[5] + 1][room[4]] == 'wall'):
-                wall_count += 1
-            if(self.level[room[5] - 1][room[4]] == 'wall'):
-                wall_count += 1
-            if(self.level[room[5]][room[4] + 1] == 'wall'):
-                wall_count += 1
-            if(self.level[room[5]][room[4] - 1] == 'wall'):
-                wall_count += 1
-
-            # remove doors that have walls on 3 sides
-            if(wall_count > 2):
-                self.level[room[5]][room[4]] = 'wall'
-
-
-            floor = 0
-            if(self.level[room[5] + 1][room[4]] == 'floor'):
-                floor += 1
-            if(self.level[room[5] - 1][room[4]] == 'floor'):
-                floor += 1
-            if(self.level[room[5]][room[4] + 1] == 'floor'):
-                floor += 1
-            if(self.level[room[5]][room[4] - 1] == 'floor'):
-                floor += 1
-
             # remove doors that have floor on 3 sides
-            if(floor > 2):
+            floor_count = 0
+            if(self.level[room[5] + 1][room[4]] == 'floor'):
+                floor_count += 1
+            if(self.level[room[5] - 1][room[4]] == 'floor'):
+                floor_count += 1
+            if(self.level[room[5]][room[4] + 1] == 'floor'):
+                floor_count += 1
+            if(self.level[room[5]][room[4] - 1] == 'floor'):
+                floor_count += 1
+            if(floor_count > 2):
+                self.level[room[5]][room[4]] = 'floor'
+
+            wall_count = 0
+            if(self.isWall(self.level[room[5] + 1][room[4]])):
+                wall_count += 1
+            if(self.isWall(self.level[room[5] - 1][room[4]])):
+                wall_count += 1
+            if(self.isWall(self.level[room[5]][room[4] + 1])):
+                wall_count += 1
+            if(self.isWall(self.level[room[5]][room[4] - 1])):
+                wall_count += 1
+            if(wall_count > 2):
                 self.level[room[5]][room[4]] = 'floor'
 
     def gen_tiles_level(self):
@@ -225,6 +284,26 @@ class Generator2():
                     tmp_tiles.append(self.tiles['floor'])
                 if col == 'wall':
                     tmp_tiles.append(self.tiles['wall'])
+                if col == 'wall_x':
+                    tmp_tiles.append(self.tiles['wall_x'])
+                if col == 'wall_y':
+                    tmp_tiles.append(self.tiles['wall_y'])
+                if col == 'wall_yd':
+                    tmp_tiles.append(self.tiles['wall_yd'])
+                if col == 'wall_yu':
+                    tmp_tiles.append(self.tiles['wall_yu'])
+                if col == 'wall_xr':
+                    tmp_tiles.append(self.tiles['wall_xr'])
+                if col == 'wall_xl':
+                    tmp_tiles.append(self.tiles['wall_xl'])
+                if col == 'wall_corner_rd':
+                    tmp_tiles.append(self.tiles['wall_corner_rd'])
+                if col == 'wall_corner_ru':
+                    tmp_tiles.append(self.tiles['wall_corner_ru'])
+                if col == 'wall_corner_ld':
+                    tmp_tiles.append(self.tiles['wall_corner_ld'])
+                if col == 'wall_corner_lu':
+                    tmp_tiles.append(self.tiles['wall_corner_lu'])
                 if col == 'door':
                     tmp_tiles.append(self.tiles['door'])
 

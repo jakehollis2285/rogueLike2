@@ -1,16 +1,15 @@
 import tcod
+import math
 import numpy as np
 from utilities import Logger as Logger
 from utilities import InputHandler as InputHandler
+import Globals as Globals
 import Entities as Entities
-
-GRID_X, GRID_Y = 60, 40
-GRID_OFFSET_X, GRID_OFFSET_Y = 0, 0
 
 class Grid(object):
 
     def initGrid(self):
-        ret = np.full((GRID_Y, GRID_X), InputHandler.STRING_TO_TILESET["."])
+        ret = np.full((GRID_Y, GRID_X), ".")
         return ret
 
     def initGridFromWorld(self, WORLD):
@@ -31,24 +30,26 @@ class Grid(object):
         # check bounds
         if (pos_x < 0):
             return True
-        elif (pos_x > GRID_X - 1):
+        elif (pos_x > self.GRID_X - 1):
             return True
         elif (pos_y < 0):
             return True
-        elif (pos_y > GRID_Y - 1):
+        elif (pos_y > self.GRID_Y - 1):
             return True
         # check allowed tiles
-        elif (self.GRID_OBJECT[pos_y, pos_x] == InputHandler.STRING_TO_TILESET['.']):
+        elif (self.GRID_OBJECT[pos_y, pos_x] == '.'):
             return False
-        elif (self.GRID_OBJECT[pos_y, pos_x] == InputHandler.STRING_TO_TILESET['{']):
+        elif (self.GRID_OBJECT[pos_y, pos_x] == '{'):
             self.WORLD.decrementLevelIndex()
+            self.PLAYER.POSITION[0] -= 1
             self.rerenderGrid()
             return False
-        elif (self.GRID_OBJECT[pos_y, pos_x] == InputHandler.STRING_TO_TILESET['}']):
+        elif (self.GRID_OBJECT[pos_y, pos_x] == '}'):
             self.WORLD.incrementLevelIndex()
+            self.PLAYER.POSITION[0] += 1
             self.rerenderGrid()
             return False
-        elif (self.GRID_OBJECT[pos_y, pos_x] == InputHandler.STRING_TO_TILESET['%']):
+        elif (self.GRID_OBJECT[pos_y, pos_x] == '%'):
             return False
         # prevent all others
         else:
@@ -63,46 +64,26 @@ class Grid(object):
         # create 2 grid objects, one to update and one to store initial data locally
         # set levelname
         # place entities on screen
+        self.GRID_X, self.GRID_Y = 60, 40
+        self.GRID_OFFSET_X, self.GRID_OFFSET_Y = 0, 0
         if (WORLD == None):
             self.GRID_DEFAULT = self.initGrid()
             self.GRID_OBJECT = self.initGrid()
             self.LEVELNAME = "default"
-            self.ENTITIES = Entities.initDefaultEntities(GRID_X, GRID_Y)
+            self.WORLD = False
+            self.PLAYER = Entities.initPlayerOnly(self.GRID_X, self.GRID_Y)
         else:
             self.GRID_DEFAULT = self.initGridFromWorld(WORLD)
             self.GRID_OBJECT = self.initGridFromWorld(WORLD)
             self.WORLD = WORLD
             self.LEVELNAME = WORLD.NAME + " : " + str(WORLD.LEVEL_INDEX)
-            self.ENTITIES = Entities.initDefaultEntities(GRID_X, GRID_Y)
-        self.PLAYER = self.ENTITIES[-1]
+            self.PLAYER = self.WORLD.ENTITIES[-1]
 
-    def draw(self, window) -> None:
-        ''' Top level function to call rendering functions '''
-        self.drawGrid(window)
-        self.drawEntities(window)
-
-    def drawGrid(self, window) -> None:
-        ''' draw tiles in GRID '''
-        tcod.console_set_default_foreground(window, tcod.white)
-        for i in range(GRID_Y):
-            for j in range(GRID_X):
-                self.GRID_OBJECT[i, j] = self.GRID_DEFAULT[i, j]
-                # draw stairs orange
-                if(self.GRID_DEFAULT[i, j] == InputHandler.STRING_TO_TILESET["{"] or self.GRID_DEFAULT[i, j] == InputHandler.STRING_TO_TILESET["}"]):
-                    tcod.console_set_default_foreground(window, tcod.orange)
-                    window.put_char(j + GRID_OFFSET_X, i + GRID_OFFSET_Y, self.GRID_DEFAULT[i, j])
-                    tcod.console_set_default_foreground(window, tcod.white)
-                # draw all other chars white
-                else:
-                    window.put_char(j + GRID_OFFSET_X, i + GRID_OFFSET_Y, self.GRID_DEFAULT[i, j])
-
-    def drawEntities(self, window) -> None:
-        ''' draw entitties with specific entity color '''
-        for i in self.ENTITIES:
-            tcod.console_set_default_foreground(window, i.color)
-            self.GRID_OBJECT[i.POSITION[1], i.POSITION[0]] = InputHandler.STRING_TO_TILESET[i.symbol]
-            window.put_char(i.POSITION[0], i.POSITION[1], InputHandler.STRING_TO_TILESET[i.symbol])
-        tcod.console_set_default_foreground(window, tcod.white)
+    def set(self, y, x, char) :
+        if(x >= 0 and x < self.GRID_X and y >= 0 and y < self.GRID_Y):
+            self.GRID_DEFAULT[y, x] = char
+            k = self.WORLD.LEVEL_INDEX
+            self.WORLD.WORLD_OBJECT[k, y, x] = char
 
     def move(self, entity, op) -> None:
         # NORTH -- 1
@@ -111,18 +92,18 @@ class Grid(object):
         # WEST -- 4
         # move player
         if (op == 1):
-            if (self.isOccupied(entity.POSITION[0], entity.POSITION[1] - 1)):
+            if (self.isOccupied(entity.POSITION[1], entity.POSITION[2] - 1)):
                 return
-            entity.POSITION[1] -= 1
+            entity.POSITION[2] -= 1
         elif (op == 2):
-            if (self.isOccupied(entity.POSITION[0] + 1, entity.POSITION[1])):
-                return
-            entity.POSITION[0] += 1
-        elif (op == 3):
-            if (self.isOccupied(entity.POSITION[0], entity.POSITION[1] + 1)):
+            if (self.isOccupied(entity.POSITION[1] + 1, entity.POSITION[2])):
                 return
             entity.POSITION[1] += 1
-        elif (op == 4):
-            if (self.isOccupied(entity.POSITION[0] - 1, entity.POSITION[1])):
+        elif (op == 3):
+            if (self.isOccupied(entity.POSITION[1], entity.POSITION[2] + 1)):
                 return
-            entity.POSITION[0] -= 1
+            entity.POSITION[2] += 1
+        elif (op == 4):
+            if (self.isOccupied(entity.POSITION[1] - 1, entity.POSITION[2])):
+                return
+            entity.POSITION[1] -= 1

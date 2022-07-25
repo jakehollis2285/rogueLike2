@@ -1,6 +1,7 @@
 import tcod
 from utilities import Logger as Logger
 from utilities import InputHandler as InputHandler
+from utilities import CommandHandler as CommandHandler
 import Console as Console
 import World as World
 import Grid as Grid
@@ -50,7 +51,7 @@ def testGrid():
 		position = list(EMPTY_GRID.PLAYER.POSITION)
 		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 1)
 		EMPTY_GRID.draw(window)
-		if (EMPTY_GRID.PLAYER.POSITION != [position[0], position[1] - 1]):
+		if (EMPTY_GRID.PLAYER.POSITION != [0, position[1], position[2] - 1]):
 			Logger.error("case1 failed in UnitTest.testGrid()")
 			raise SystemExit()
 		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 3)
@@ -60,7 +61,7 @@ def testGrid():
 			raise SystemExit()
 		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 2)
 		EMPTY_GRID.draw(window)
-		if (EMPTY_GRID.PLAYER.POSITION != [position[0] + 1, position[1]]):
+		if (EMPTY_GRID.PLAYER.POSITION != [0, position[1] + 1, position[2]]):
 			Logger.error("case3 failed in UnitTest.testGrid()")
 			raise SystemExit()
 		EMPTY_GRID.move(EMPTY_GRID.PLAYER, 4)
@@ -114,27 +115,27 @@ def testConsole():
 		CONSOLE.backspace()
 		CONSOLE.saveLineToHistory()
 		# test Console Commands
-		CONSOLE.printHelp()
+		CommandHandler.helpCommand()
 		CONSOLE.newLine()
-		CONSOLE.handleCommand("help")
+		CommandHandler.handleCommand("help")
 		# test cases (console has a history, so we can validate the console by checking its history)
 		# newLine function saves line to history and increments pointer
 		# saveLineToHistory function saves the current line to history
-		case1 = CONSOLE.parseCommand(CONSOLE.HISTORY[0])
+		case1 = CommandHandler.parseCommand(CONSOLE.HISTORY[0])
 		case1_expected = "this is the line to print"
 		if (case1 != case1_expected):
 			Logger.error("case1 failed in UnitTest.testConsole()")
 			Logger.error("Input: " + case1)
 			Logger.error("Expected: " + case1_expected)
 			raise SystemExit()
-		case2 = CONSOLE.parseCommand(CONSOLE.HISTORY[1])
+		case2 = CommandHandler.parseCommand(CONSOLE.HISTORY[1])
 		case2_expected = "q"
 		if (case2 != "q"):
 			Logger.error("case2 failed in UnitTest.testConsole()")
 			Logger.error("Input: " + case2)
 			Logger.error("Expected: " + case2_expected)
 			raise SystemExit()
-		case3 = CONSOLE.parseCommand(CONSOLE.HISTORY[2])
+		case3 = CommandHandler.parseCommand(CONSOLE.HISTORY[2])
 		case3_expected = ""
 		if (case3 != ""):
 			Logger.error("case3 failed in UnitTest.testConsole()")

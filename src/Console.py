@@ -1,59 +1,55 @@
 import tcod
 import numpy as np
-
+import CommandHandler as CommandHandler
 from utilities import InputHandler as InputHandler
 from utilities import ScreenPrintHelper as sph
 from utilities import Logger as Logger
 
-CONSOLE_X, CONSOLE_Y = 60, 10
-CONSOLE_OFFSET_X, CONSOLE_OFFSET_Y = 0, 40
-HISTORY_MAX_LENGTH = 100
-
 class Console(object):
 
     def initConsole(self):
-        ret = np.full((CONSOLE_X, CONSOLE_Y), InputHandler.STRING_TO_TILESET[" "])
-        for i in range(CONSOLE_X):
-            for j in range(CONSOLE_Y):
+        ret = np.full((self.CONSOLE_X, self.CONSOLE_Y), ord(" "))
+        for i in range(self.CONSOLE_X):
+            for j in range(self.CONSOLE_Y):
                 # draw prompt
                 if (i == 1 and j == 1) :
-                    ret[i, j] = InputHandler.STRING_TO_TILESET["$"]
+                    ret[i, j] = ord("$")
                 # draw bounding box
-                sph.printBoxBorder(ret, i, j, CONSOLE_X, CONSOLE_Y)
+                sph.printBoxBorder(ret, i, j, self.CONSOLE_X, self.CONSOLE_Y)
         return ret
 
     def __init__(self):
         super(Console, self).__init__()
+        self.CONSOLE_X, self.CONSOLE_Y = 60, 10
+        self.CONSOLE_OFFSET_X, self.CONSOLE_OFFSET_Y = 0, 40
+        self.HISTORY_MAX_LENGTH = 100
         self.CONSOLE_OBJECT = self.initConsole()
         self.CONSOLE_POINTER = [2, 1]
         self.HISTORY = []
 
-    def printConsole(self, window) -> None:
+    # def printConsole(self, window) -> None:
         ''' print contents of console obj '''
-        for i in range(CONSOLE_X):
-            for j in range(CONSOLE_Y):
-                # print char or space
-                if (self.CONSOLE_OBJECT[i, j] != ''):
-                   window.put_char(i + CONSOLE_OFFSET_X, j + CONSOLE_OFFSET_Y, self.CONSOLE_OBJECT[i, j])
-                else:
-                    window.put_char(i + CONSOLE_OFFSET_X, j + CONSOLE_OFFSET_Y, 0)
-                # print cursor
-                if [i, j] == self.CONSOLE_POINTER:
-                    window.put_char(i + CONSOLE_OFFSET_X, j + CONSOLE_OFFSET_Y, InputHandler.STRING_TO_TILESET["_"])
+        # for i in range(CONSOLE_X):
+        #     for j in range(CONSOLE_Y):
+                
 
     def printLine(self, message, saveToHistory=False) -> None:
         ''' print a string {message} in the console at console pointer '''
         self.CONSOLE_POINTER = [2, self.CONSOLE_POINTER[1] + 1]
         for i in range(len(message)):
-            self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0] + i, self.CONSOLE_POINTER[1]] = InputHandler.STRING_TO_TILESET[message[i]]
+            self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0] + i, self.CONSOLE_POINTER[1]] = ord(message[i])
         if (saveToHistory):
             self.saveLineToHistory()
         self.CONSOLE_POINTER[1] += 1
 
+    def printLines(self, messages) -> None:
+        for line in messages:
+            self.printLine(line)
+
     def saveLineToHistory(self) -> None:
         ''' append line to history list '''
         self.HISTORY.append(self.CONSOLE_OBJECT[2:,self.CONSOLE_POINTER[1]])
-        if(len(self.HISTORY) > HISTORY_MAX_LENGTH):
+        if(len(self.HISTORY) > self.HISTORY_MAX_LENGTH):
             self.HISTORY.pop(0)
 
     def set(self, val) -> None:
@@ -62,51 +58,19 @@ class Console(object):
              - handles incrementing to new line with no prompt with line saving to history
              - handles clearing the console when the console object buffer is full
         '''
-        if (self.CONSOLE_POINTER[0] < CONSOLE_X - 1 and self.CONSOLE_POINTER[1] < CONSOLE_Y - 1):
+        if (self.CONSOLE_POINTER[0] < self.CONSOLE_X - 1 and self.CONSOLE_POINTER[1] < self.CONSOLE_Y - 1):
             # increment pointer same line
             self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0], self.CONSOLE_POINTER[1]] = val
             self.CONSOLE_POINTER[0] += 1
-        elif (self.CONSOLE_POINTER[0] >= CONSOLE_X - 1):
+        elif (self.CONSOLE_POINTER[0] >= self.CONSOLE_X - 1):
             # increment pointer new line
             self.saveLineToHistory()
             self.CONSOLE_POINTER[0] = 2
             self.CONSOLE_POINTER[1] += 1
-        elif (self.CONSOLE_POINTER[1] >= CONSOLE_Y - 1):
+        elif (self.CONSOLE_POINTER[1] >= self.CONSOLE_Y - 1):
             # clear screen / reset pointer
             self.CONSOLE_OBJECT = self.initConsole()
-            self.CONSOLE_POINTER = [1, 1]
-
-    def printHelp(self):
-        ''' print help command '''
-        lines = ["[commands]",
-        "    help    print this message"]
-        for line in lines:
-            self.printLine(line)
-
-    def handleCommand(self, command) -> None:
-        ''' command interfaces (given string command call relevant function) '''
-        if (command == "help"):
-            self.printHelp()
-
-    def parseCommand(self, command_array) -> None:
-        ''' 
-            given an array of character return a string command 
-            strings returned are in the form "arg1 arg2 arg3 ... argN"
-            where arguments are allowed 1 space in between
-
-            '|' and '_' characters are ignored
-            2 spaces terminates the string
-        '''
-        command = ""
-        for i in range(len(command_array)):
-            if (InputHandler.TILESET_TO_STRING[command_array[i]] == " ") and (InputHandler.TILESET_TO_STRING[command_array[i + 1]] == " "):
-                break;
-            if (InputHandler.TILESET_TO_STRING[command_array[i]] != "|" and InputHandler.TILESET_TO_STRING[command_array[i]] != "_"):
-                command += InputHandler.TILESET_TO_STRING[command_array[i]]
-        if (command != ""):
-            while command[-1] == " ":
-                command = command[:len(command) - 1]
-        return command
+            self.CONSOLE_POINTER = [2, 1]
 
     def newLine(self) -> None:
         '''
@@ -116,18 +80,21 @@ class Console(object):
              - increment pointer to new line and add prompt
         '''
         command_array = self.CONSOLE_OBJECT[2:,self.CONSOLE_POINTER[1]]
-        command = self.parseCommand(command_array)
+        command = CommandHandler.parseCommand(command_array)
         Logger.debug("user entered command: {0}".format(command))
         self.saveLineToHistory()
-        self.set(InputHandler.STRING_TO_TILESET[" "])
-        self.handleCommand(command)
+        self.set(ord(" "))
+        command_response = CommandHandler.handleCommand(command)
+        if (command_response != None):
+            self.printLines(command_response)
         self.CONSOLE_POINTER = [1, self.CONSOLE_POINTER[1] + 1]
-        self.set(InputHandler.STRING_TO_TILESET["$"])
+        self.set(ord("$"))
+        self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0], self.CONSOLE_POINTER[1]] = ord("_")
 
     def backspace(self) -> None:
         ''' handle backspace input in console, delete current char move cursor back '''
-        self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0], self.CONSOLE_POINTER[1]] = InputHandler.STRING_TO_TILESET[" "]
+        self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0], self.CONSOLE_POINTER[1]] = ord(" ")
         self.CONSOLE_POINTER[0] -= 1
         if (self.CONSOLE_POINTER[0] <= 2) :
             self.CONSOLE_POINTER[0] = 2
-        self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0], self.CONSOLE_POINTER[1]] = InputHandler.STRING_TO_TILESET["_"]
+        self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0], self.CONSOLE_POINTER[1]] = ord("_")
