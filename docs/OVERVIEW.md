@@ -23,9 +23,16 @@ Features Overview:
 
 	Level / World Generator
 		(called `WORLD` in code)
-		- render 3 Dimensional world and populate with entities
+		- generate 3 Dimensional world and populate with entities
 		- maintain state dynamically across the entire World
 			** this is gonna be complicated without major performance hit
+
+	Field of View
+		(Managed by `ScreenHandler.py`)
+		- print level tiles with color only if they exist in the player vision radius
+		- block player vision on walls and other `vision blocker` objects
+		- render tiles player has already explored in a darker, generic color
+		- only render entities within the player vision radius
 
 Map_Generator:
 	

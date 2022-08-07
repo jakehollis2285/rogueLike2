@@ -1,4 +1,5 @@
 import tcod
+import numpy as np
 from utilities import InputHandler as InputHandler
 
 def printBoxBorder(obj, i, j, max_x, max_y):
@@ -36,9 +37,28 @@ def printBoxBorder(obj, i, j, max_x, max_y):
     if (i == max_x - 1 and j == 0) :
         obj[i, j] = ord("┐")
 
-def colored(r, g, b, text):
-    ''' color formated tcod string '''
-    return f"{tcod.COLCTRL_FORE_RGB:c}{r:c}{g:c}{b:c}{text}"
+def isEdge(i, j, max_x, max_y):
+    if ((i == 0  or j == max_x - 1)
+        or (j == 0  or i == max_y - 1)
+        or (i == 0 and j == 0)
+        or (j == max_x - 1 and i == max_y - 1)
+        or (i == 0 and i == max_y - 1)
+        or (j == max_x - 1 and j == 0)) :
+     return True
+
+def isVisionBlocker(symbol):
+    if (symbol == '#'
+        or symbol == '╣'
+        or symbol == '║'
+        or symbol == '╗'
+        or symbol == '╝'
+        or symbol == '╚'
+        or symbol == '╔'
+        or symbol == '╩'
+        or symbol == '╦'
+        or symbol == '╠'
+        or symbol == '═'):
+     return True
 
 def printTitle(context, message, RENDER_X, RENDER_Y, SCALE) -> None:
     ''' print title screen from globals '''

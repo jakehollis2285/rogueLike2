@@ -50,7 +50,9 @@ def handleCommand(command):
 def helpCommand():
     ''' return help command message to console'''
     return ["[commands]",
-    "    help    print this message"]
+    "    help          -- print this message",
+    "    esc           -- exit the game",
+    "    arrow keys    -- move player"]
 
 def digCommand(direction):
     ''' return dig command message to console'''

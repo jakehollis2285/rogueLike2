@@ -2,6 +2,7 @@ import tcod
 import numpy as np
 from utilities import InputHandler as InputHandler
 from utilities import ScreenPrintHelper as sph
+from utilities import Colors
 
 class Panel(object):
 
@@ -15,7 +16,7 @@ class Panel(object):
 
     def printColoredLine(self, message, r, g, b, window):
         ''' print message to panel at panel pointer with rgb colors '''
-        colored_message = sph.colored(r, g, b, message)
+        colored_message = Colors.colored(r, g, b, message)
         self.printLine(colored_message, window)
 
     def printLine(self, message, window):
@@ -26,7 +27,7 @@ class Panel(object):
 
     def __init__(self):
         super(Panel, self).__init__()
-        self.PANEL_X, self.PANEL_Y = 20, 50
+        self.PANEL_X, self.PANEL_Y = 20, 55
         self.PANEL_OFFSET_X, self.PANEL_OFFSET_Y = 60, 0
 
         self.PANEL_MAX_X, self.PANEL_MAX_Y = 18, 58

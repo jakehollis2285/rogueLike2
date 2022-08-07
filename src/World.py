@@ -35,6 +35,10 @@ class World(object):
 						break;
 		return obj
 
+	def generate_explored_set(self, shape):
+		''' generate a 3D boolean array of the same size as the world '''
+		return np.full(shape, False)
+
 	def incrementLevelIndex(self):
 		if (self.LEVEL_INDEX == len(self.WORLD_OBJECT) - 1):
 			return
@@ -50,6 +54,7 @@ class World(object):
 	def __init__(self, NAME):
 		super(World, self).__init__()
 		self.WORLD_OBJECT = self.generate_world()
-		self.ENTITIES = Entities.initDefaultEntities(60, 40, 4)
+		self.EXPLORED_SET = self.generate_explored_set(np.shape(self.WORLD_OBJECT))
+		self.ENTITIES = Entities.initDefaultEntities(self.WORLD_OBJECT, 60, 40, 4)
 		self.NAME = NAME
 		self.LEVEL_INDEX = len(self.WORLD_OBJECT) - 1

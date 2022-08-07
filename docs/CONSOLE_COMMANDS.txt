@@ -1,0 +1,9 @@
+[COMMANDS]
+
+help                -- print help message to console (basic controls)
+dig [direction]     -- remove a `stone` tile (#) from the map
+
+
+[ARGUMENTS]
+
+direction     -- (string) `up`, `down`, `left`, or `right`

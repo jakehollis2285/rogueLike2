@@ -2,6 +2,13 @@ To run the game run the following shell executable:
 
 	`./run.sh`
 
+In game use the following methods to interact:
+	
+	 - arrow keys -> move player
+	 - scroll wheel -> change render scale (make screen larger or smaller in window; window resize events will be handled automatically, this is just an extra level of granularity)
+	 - latin characters / backspace / return -> type in console
+	 - esc -> quit the game
+
 To run the map generator run the following shell executable:
 
 	`./map_generator {number_of_floors} {generation_type} [filename]`

@@ -20,18 +20,12 @@ class Console(object):
 
     def __init__(self):
         super(Console, self).__init__()
-        self.CONSOLE_X, self.CONSOLE_Y = 60, 10
+        self.CONSOLE_X, self.CONSOLE_Y = 60, 15
         self.CONSOLE_OFFSET_X, self.CONSOLE_OFFSET_Y = 0, 40
         self.HISTORY_MAX_LENGTH = 100
         self.CONSOLE_OBJECT = self.initConsole()
         self.CONSOLE_POINTER = [2, 1]
         self.HISTORY = []
-
-    # def printConsole(self, window) -> None:
-        ''' print contents of console obj '''
-        # for i in range(CONSOLE_X):
-        #     for j in range(CONSOLE_Y):
-                
 
     def printLine(self, message, saveToHistory=False) -> None:
         ''' print a string {message} in the console at console pointer '''
@@ -40,9 +34,9 @@ class Console(object):
             self.CONSOLE_OBJECT[self.CONSOLE_POINTER[0] + i, self.CONSOLE_POINTER[1]] = ord(message[i])
         if (saveToHistory):
             self.saveLineToHistory()
-        self.CONSOLE_POINTER[1] += 1
 
     def printLines(self, messages) -> None:
+        ''' print a list of lines to the console at the console pointer '''
         for line in messages:
             self.printLine(line)
 

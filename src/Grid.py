@@ -41,11 +41,13 @@ class Grid(object):
             return False
         elif (self.GRID_OBJECT[pos_y, pos_x] == '{'):
             self.WORLD.decrementLevelIndex()
+            self.EXPLORED_SET = self.WORLD.EXPLORED_SET[self.WORLD.LEVEL_INDEX]
             self.PLAYER.POSITION[0] -= 1
             self.rerenderGrid()
             return False
         elif (self.GRID_OBJECT[pos_y, pos_x] == '}'):
             self.WORLD.incrementLevelIndex()
+            self.EXPLORED_SET = self.WORLD.EXPLORED_SET[self.WORLD.LEVEL_INDEX]
             self.PLAYER.POSITION[0] += 1
             self.rerenderGrid()
             return False
@@ -71,11 +73,15 @@ class Grid(object):
             self.GRID_OBJECT = self.initGrid()
             self.LEVELNAME = "default"
             self.WORLD = False
+            self.EXPLORED_SET = self.WORLD.EXPLORED_SET[self.WORLD.LEVEL_INDEX]
+            self.VISIBLE = np.full(np.shape(self.GRID_OBJECT), False)
             self.PLAYER = Entities.initPlayerOnly(self.GRID_X, self.GRID_Y)
         else:
             self.GRID_DEFAULT = self.initGridFromWorld(WORLD)
             self.GRID_OBJECT = self.initGridFromWorld(WORLD)
             self.WORLD = WORLD
+            self.EXPLORED_SET = self.WORLD.EXPLORED_SET[self.WORLD.LEVEL_INDEX]
+            self.VISIBLE = np.full(np.shape(self.GRID_OBJECT), False)
             self.LEVELNAME = WORLD.NAME + " : " + str(WORLD.LEVEL_INDEX)
             self.PLAYER = self.WORLD.ENTITIES[-1]
 
